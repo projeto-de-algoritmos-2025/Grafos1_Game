@@ -42,13 +42,22 @@ velocityY = 0
 snake_body = []
 game_over = False
 score = 0
+waiting_to_start = True  # novo estado
 
 
 #Loop do jogo
 def change_direction(e):
 
-    global velocityX, velocityY, game_over
+    global velocityX, velocityY, game_over, waiting_to_start
+    
+    if waiting_to_start:
+        if e.keysym in ["Up", "Down", "Left", "Right"]:
+            waiting_to_start = False  
+        else:
+            return  
+    
     if (game_over):
+        restart_game()
         return
 
     if (e.keysym == "Up" and velocityY != 1):
@@ -109,6 +118,18 @@ def draw():
     move()
 
     canvas.delete("all")
+    
+    if waiting_to_start:
+        # Título com sombra
+        canvas.create_text(WINDOW_WIDTH/2 + 2, WINDOW_HEIGHT/2 - 80 + 2,
+                       font="Arial 28 bold", text="🐍 SNAKE GAME 🐍", fill="gray")
+        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 80,
+                       font="Arial 28 bold", text="🐍 SNAKE GAME 🐍", fill="lime green")
+        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Arial 20", text = "Bem vindo!",  fill = "white")
+        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 10, font = "Arial 12", text = "\n\n\n\nPressione ↑ ↓ ← → para iniciar", fill = "white")
+        window.after(100, draw)
+        return
+
 
     #Comida
     canvas.create_rectangle(food.x, food.y, food.x + TILE_SIZE, food.y + TILE_SIZE, fill = 'red')
@@ -121,10 +142,24 @@ def draw():
 
     if (game_over):
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Arial 20", text = f"Game Over: {score}", fill = "white")
+        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 10, font = "Arial 12", text = "\n\n\n\nPressione qualquer tecla para reiniciar", fill = "white")
     else:
         canvas.create_text(30, 20, font = "Arial 10", text = f"Score: {score}", fill = "white")
 
     window.after(100, draw) #Chama o draw a cada 100ms -> 10 frames por segundo
+
+def restart_game():
+    global snake, food, snake_body, velocityX, velocityY, game_over, score, paused, path
+
+    snake = Tile(TILE_SIZE * 5, TILE_SIZE * 5)
+    food = Tile(random.randint(0, COLS - 1) * TILE_SIZE, random.randint(0, ROWS - 1) * TILE_SIZE)
+    velocityX = 0
+    velocityY = 0
+    snake_body = []
+    game_over = False
+    score = 0
+    paused = False
+    path = []
 
 draw()
 window.bind("<KeyRelease>", change_direction) #Muda a direção
