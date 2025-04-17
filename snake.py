@@ -1,5 +1,6 @@
 import tkinter
 import random  
+from collections import deque
 
 ROWS = 25
 COLS = 25
@@ -42,13 +43,23 @@ velocityY = 0
 snake_body = []
 game_over = False
 score = 0
-waiting_to_start = True  # novo estado
+waiting_to_start = True 
+paused = False 
+path = []
 
+def toggle_pause(e):
+    global paused, path
+    if not paused:
+        paused = True
+        path = bfs((snake.x, snake.y), (food.x, food.y))
+    else:
+        paused = False
+        path = []
 
 #Loop do jogo
 def change_direction(e):
 
-    global velocityX, velocityY, game_over, waiting_to_start
+    global velocityX, velocityY, game_over, waiting_to_start, paused, path
     
     if waiting_to_start:
         if e.keysym in ["Up", "Down", "Left", "Right"]:
@@ -59,6 +70,10 @@ def change_direction(e):
     if (game_over):
         restart_game()
         return
+    
+    if paused:
+        paused = False
+        path = []
 
     if (e.keysym == "Up" and velocityY != 1):
         velocityX = 0
@@ -79,7 +94,7 @@ def change_direction(e):
 
 def move():
     global snake, food, snake_body, game_over, score
-    if (game_over):
+    if (game_over) or paused:
         return
     
     if (snake.x < 0 or snake.x >= WINDOW_WIDTH or snake.y < 0 or snake.y >= WINDOW_HEIGHT):
@@ -124,9 +139,12 @@ def draw():
         canvas.create_text(WINDOW_WIDTH/2 + 2, WINDOW_HEIGHT/2 - 80 + 2,
                        font="Arial 28 bold", text="🐍 SNAKE GAME 🐍", fill="gray")
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 80,
-                       font="Arial 28 bold", text="🐍 SNAKE GAME 🐍", fill="lime green")
+                       font="Arial 28 bold", text="🐍 SNAKE GAME 🐍", fill="magenta")
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Arial 20", text = "Bem vindo!",  fill = "white")
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 10, font = "Arial 12", text = "\n\n\n\nPressione ↑ ↓ ← → para iniciar", fill = "white")
+        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 120, font = "Arial 10 italic", 
+                       text = "\n\nQuer uma dica? Pressione a tecla \nespaço e veja o menor caminho!", 
+                       fill = "light gray")
         window.after(100, draw)
         return
 
@@ -146,6 +164,11 @@ def draw():
     else:
         canvas.create_text(30, 20, font = "Arial 10", text = f"Score: {score}", fill = "white")
 
+    if paused:
+        for (x, y) in path:
+            canvas.create_rectangle(x, y, x + TILE_SIZE, y + TILE_SIZE, fill="gray")
+
+
     window.after(100, draw) #Chama o draw a cada 100ms -> 10 frames por segundo
 
 def restart_game():
@@ -161,7 +184,36 @@ def restart_game():
     paused = False
     path = []
 
+
+def bfs(start, goal):
+    directions = [(0, -TILE_SIZE), (0, TILE_SIZE), (-TILE_SIZE, 0), (TILE_SIZE, 0)]
+    queue = deque()
+    queue.append((start, []))
+    visited = set()
+    visited.add(start)
+
+    obstacles = {(tile.x, tile.y) for tile in snake_body}
+
+    while queue:
+        current, current_path = queue.popleft()
+        if current == goal:
+            return current_path
+
+        for dx, dy in directions:
+            new_x = current[0] + dx
+            new_y = current[1] + dy
+            next_pos = (new_x, new_y)
+
+            if (0 <= new_x < WINDOW_WIDTH and 0 <= new_y < WINDOW_HEIGHT and
+                next_pos not in visited and next_pos not in obstacles):
+                visited.add(next_pos)
+                queue.append((next_pos, current_path + [next_pos]))
+
+    return [] 
+
+
 draw()
 window.bind("<KeyRelease>", change_direction) #Muda a direção
+window.bind("<space>", toggle_pause) #Pausa e Calcula menor caminho por BFS
 window.mainloop() #Acompanha eventos 
 
