@@ -7,8 +7,8 @@ ROWS = 25
 COLS = 25
 TILE_SIZE = 25
 
-WINDOW_WIDTH = TILE_SIZE * COLS # 25*25 = 625
-WINDOW_HEIGHT = TILE_SIZE * ROWS # 25*25 = 625
+WINDOW_WIDTH = TILE_SIZE * COLS
+WINDOW_HEIGHT = TILE_SIZE * ROWS
 
 # Classe Tile que representa cada posição da cobrinha/comida
 class Tile:
@@ -40,11 +40,12 @@ velocityY = 0
 snake_body = []
 game_over = False
 score = 0
+high_score = 0
 waiting_to_start = True
 paused = False
 path = []
 use_bfs = True
-algorithm_selected = False # Jogador escolhe entre BFS ou DFS 
+algorithm_selected = False
 obstacles = []  # Lista para armazenar os obstáculos
 
 # Escolha entre BFS e DFS após tela inicial e também durante o jogo
@@ -106,7 +107,7 @@ def change_direction(e):
         velocityY = 0
 
 def move():
-    global snake, food, snake_body, game_over, score, obstacles
+    global snake, food, snake_body, game_over, score, high_score, obstacles
     if game_over or paused or not algorithm_selected:
         return
 
@@ -127,6 +128,8 @@ def move():
     if snake.x == food.x and snake.y == food.y:
         snake_body.append(Tile(food.x, food.y))
         score += 1
+        if score > high_score:
+            high_score = score
         while True:
             food.x = random.randint(0, COLS - 1) * TILE_SIZE
             food.y = random.randint(0, ROWS - 1) * TILE_SIZE
@@ -188,8 +191,10 @@ def draw():
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font="Arial 20", text=f"Game Over: {score}", fill="white")
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 10, font="Arial 12", text="\n\n\n\nPressione qualquer tecla para reiniciar", fill="white")
     else:
-        canvas.create_text(30, 20, font="Arial 10", text=f"Score: {score}", fill="white")
-        canvas.create_text(530, 20, font="Arial 10", text=f"Modo: {'BFS' if use_bfs else 'DFS'}", fill="light gray")
+        canvas.create_text(50, 20, anchor="w", font="Arial 10", text=f"Pontuação atual: {score}", fill="white")
+        canvas.create_text(50, 40, anchor="w", font="Arial 10", text=f"Maior Pontuação: {high_score}", fill="white")
+        canvas.create_text(WINDOW_WIDTH - 80, 20, font="Arial 10", text=f"Modo: {'BFS' if use_bfs else 'DFS'}", fill="light gray")
+        
 
     if paused:
         for (x, y) in path:
@@ -266,3 +271,4 @@ window.bind("d", toggle_algorithm)
 # Inicia o jogo
 draw()
 window.mainloop()
+
