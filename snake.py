@@ -7,8 +7,8 @@ ROWS = 25
 COLS = 25
 TILE_SIZE = 25
 
-WINDOW_WIDTH = TILE_SIZE * COLS  # 25*25 = 625
-WINDOW_HEIGHT = TILE_SIZE * ROWS  # 25*25 = 625
+WINDOW_WIDTH = TILE_SIZE * COLS # 25*25 = 625
+WINDOW_HEIGHT = TILE_SIZE * ROWS # 25*25 = 625
 
 # Classe Tile que representa cada posição da cobrinha/comida
 class Tile:
@@ -43,11 +43,11 @@ score = 0
 waiting_to_start = True
 paused = False
 path = []
-use_bfs = True  # Algoritmo padrão: BFS
-algorithm_selected = False  # Jogador escolhe após tela inicial
+use_bfs = True
+algorithm_selected = False # Jogador escolhe entre BFS ou DFS 
+obstacles = []  # Lista para armazenar os obstáculos
 
-# Escolha entre BFS e DFS após tela inicial ou durante o jogo
-
+# Escolha entre BFS e DFS após tela inicial e também durante o jogo
 def toggle_algorithm(e):
     global use_bfs
     key = e.keysym.lower()
@@ -56,7 +56,6 @@ def toggle_algorithm(e):
     elif key == "d":
         use_bfs = False
 
-# Pausar o jogo e mostrar o caminho BFS/DFS
 def toggle_pause(e):
     global paused, path
     if not paused and algorithm_selected:
@@ -106,9 +105,8 @@ def change_direction(e):
         velocityX = 1
         velocityY = 0
 
-# Move a cobrinha
 def move():
-    global snake, food, snake_body, game_over, score
+    global snake, food, snake_body, game_over, score, obstacles
     if game_over or paused or not algorithm_selected:
         return
 
@@ -121,11 +119,26 @@ def move():
             game_over = True
             return
 
+    for obs in obstacles:
+        if snake.x == obs.x and snake.y == obs.y:
+            game_over = True
+            return
+
     if snake.x == food.x and snake.y == food.y:
         snake_body.append(Tile(food.x, food.y))
-        food.x = random.randint(0, COLS - 1) * TILE_SIZE
-        food.y = random.randint(0, ROWS - 1) * TILE_SIZE
         score += 1
+        while True:
+            food.x = random.randint(0, COLS - 1) * TILE_SIZE
+            food.y = random.randint(0, ROWS - 1) * TILE_SIZE
+            if all(food.x != t.x or food.y != t.y for t in snake_body + obstacles) and (food.x != snake.x or food.y != snake.y):
+                break
+        # Gera obstáculo em posição livre
+        while True:
+            ox = random.randint(0, COLS - 1) * TILE_SIZE
+            oy = random.randint(0, ROWS - 1) * TILE_SIZE
+            if all(ox != t.x or oy != t.y for t in snake_body + obstacles) and (ox != snake.x or oy != snake.y) and (ox != food.x or oy != food.y):
+                obstacles.append(Tile(ox, oy))
+                break
 
     for i in range(len(snake_body) - 1, -1, -1):
         tile = snake_body[i]
@@ -140,10 +153,7 @@ def move():
     snake.x += velocityX * TILE_SIZE
     snake.y += velocityY * TILE_SIZE
 
-# Desenha tudo na tela
 def draw():
-    global snake, food, snake_body, game_over, score
-
     canvas.delete("all")
 
     if waiting_to_start:
@@ -152,7 +162,7 @@ def draw():
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font="Arial 20", text="Bem vindo!", fill="white")
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 10, font="Arial 12", text="\n\n\n\nPressione ↑ ↓ ← → para iniciar", fill="white")
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 120, font="Arial 10 italic", 
-                           text="\n\nQuer uma dica? Pressione a tecla \nespaço e veja o menor caminho!", fill="light gray")
+                           text="\n\nQuer uma dica? Pressione a tecla espaço e veja o menor caminho!", fill="light gray")
         window.after(100, draw)
         return
 
@@ -165,11 +175,14 @@ def draw():
 
     move()
 
-    canvas.create_rectangle(food.x, food.y, food.x + TILE_SIZE, food.y + TILE_SIZE, fill='red')
-    canvas.create_rectangle(snake.x, snake.y, snake.x + TILE_SIZE, snake.y + TILE_SIZE, fill='lime green')
+    canvas.create_rectangle(food.x, food.y, food.x + TILE_SIZE, food.y + TILE_SIZE, fill='white')
+    canvas.create_rectangle(snake.x, snake.y, snake.x + TILE_SIZE, snake.y + TILE_SIZE, fill='green')
 
     for tile in snake_body:
-        canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill='lime green')
+        canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill='green')
+
+    for obs in obstacles:
+        canvas.create_rectangle(obs.x, obs.y, obs.x + TILE_SIZE, obs.y + TILE_SIZE, fill='red')
 
     if game_over:
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font="Arial 20", text=f"Game Over: {score}", fill="white")
@@ -184,9 +197,8 @@ def draw():
 
     window.after(100, draw)
 
-# Reinicia o jogo
 def restart_game():
-    global snake, food, snake_body, velocityX, velocityY, game_over, score, paused, path, algorithm_selected
+    global snake, food, snake_body, velocityX, velocityY, game_over, score, paused, path, algorithm_selected, obstacles
 
     snake = Tile(TILE_SIZE * 5, TILE_SIZE * 5)
     food = Tile(random.randint(0, COLS - 1) * TILE_SIZE, random.randint(0, ROWS - 1) * TILE_SIZE)
@@ -198,6 +210,7 @@ def restart_game():
     paused = False
     path = []
     algorithm_selected = False
+    obstacles = []
 
 def bfs(start, goal):
     directions = [(0, -TILE_SIZE), (0, TILE_SIZE), (-TILE_SIZE, 0), (TILE_SIZE, 0)]
@@ -205,7 +218,7 @@ def bfs(start, goal):
     queue.append((start, []))
     visited = set()
     visited.add(start)
-    obstacles = {(tile.x, tile.y) for tile in snake_body}
+    obstacle_positions = {(tile.x, tile.y) for tile in snake_body + obstacles}
 
     while queue:
         current, current_path = queue.popleft()
@@ -217,7 +230,7 @@ def bfs(start, goal):
             new_y = current[1] + dy
             next_pos = (new_x, new_y)
 
-            if 0 <= new_x < WINDOW_WIDTH and 0 <= new_y < WINDOW_HEIGHT and next_pos not in visited and next_pos not in obstacles:
+            if 0 <= new_x < WINDOW_WIDTH and 0 <= new_y < WINDOW_HEIGHT and next_pos not in visited and next_pos not in obstacle_positions:
                 visited.add(next_pos)
                 queue.append((next_pos, current_path + [next_pos]))
     return []
@@ -227,7 +240,7 @@ def dfs(start, goal):
     stack = [(start, [])]
     visited = set()
     visited.add(start)
-    obstacles = {(tile.x, tile.y) for tile in snake_body}
+    obstacle_positions = {(tile.x, tile.y) for tile in snake_body + obstacles}
 
     while stack:
         current, current_path = stack.pop()
@@ -239,7 +252,7 @@ def dfs(start, goal):
             new_y = current[1] + dy
             next_pos = (new_x, new_y)
 
-            if 0 <= new_x < WINDOW_WIDTH and 0 <= new_y < WINDOW_HEIGHT and next_pos not in visited and next_pos not in obstacles:
+            if 0 <= new_x < WINDOW_WIDTH and 0 <= new_y < WINDOW_HEIGHT and next_pos not in visited and next_pos not in obstacle_positions:
                 visited.add(next_pos)
                 stack.append((next_pos, current_path + [next_pos]))
     return []
