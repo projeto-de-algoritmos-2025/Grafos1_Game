@@ -10,7 +10,12 @@
 | 190033011   |  Luana Souza Silva Torres          |
 | 211045196  | Suzane Alves Duarte        |
 
+## **Vídeo de Apresentação**
 
+A partir do link é possível ver o vídeo de apresentação do projeto com mais detalhes:
+<iframe width="560" height="315" src="https://www.youtube.com/embed/imLMD2fo3sc?si=xgCoJPclccSGibXL" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+[Link para apresentação](https://www.youtube.com/embed/imLMD2fo3sc?si=xgCoJPclccSGibXL)
 
 ## **Sobre**
 
