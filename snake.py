@@ -160,12 +160,12 @@ def draw():
     canvas.delete("all")
 
     if waiting_to_start:
-        canvas.create_text(WINDOW_WIDTH/2 + 2, WINDOW_HEIGHT/2 - 80 + 2, font="Arial 28 bold", text="🐍 SNAKE GAME 🐍", fill="gray")
-        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 80, font="Arial 28 bold", text="🐍 SNAKE GAME 🐍", fill="magenta")
+        canvas.create_text(WINDOW_WIDTH/2 + 2, WINDOW_HEIGHT/2 - 80 + 2, font="Arial 28 bold", text="🐍 PathFinder Snake 🐍", fill="gray")
+        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 - 80, font="Arial 28 bold", text="🐍 PathFinder Snake 🐍", fill="magenta")
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font="Arial 20", text="Bem vindo!", fill="white")
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 10, font="Arial 12", text="\n\n\n\nPressione ↑ ↓ ← → para iniciar", fill="white")
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2 + 120, font="Arial 10 italic", 
-                           text="\n\nQuer uma dica? Pressione a tecla espaço e veja o menor caminho!", fill="light gray")
+                           text="\n\nQuer uma dica? Ao optar por utilizar o algoritmo BFS você obtém o menor caminho!", fill="light gray")
         window.after(100, draw)
         return
 

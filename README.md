@@ -1,11 +1,7 @@
-# **Nome do Game**
-
----
+# **PathFinder Snake**
 
 ### **Número do trabalho:** 1
-### **Conteúdo da Disciplina:** Grafos 
-
----
+### **Conteúdo da Disciplina:** Grafos, BFS, DFS
 
 ### **Alunos**
 
@@ -14,55 +10,110 @@
 | 190033011   |  Luana Souza Silva Torres          |
 | 211045196  | Suzane Alves Duarte        |
 
----
 
-### **Sobre**
 
-Este projeto consiste em uma aplicação interativa em Python que simula a resolução de um labirinto utilizando algoritmos de busca em grafos. A proposta tem como objetivo principal demonstrar, de forma visual, como funcionam os algoritmos de Busca em Largura (BFS) e Busca em Profundidade (DFS). 
+## **Sobre**
 
-O labirinto é representado como uma matriz (ou grade), em que cada célula representa um ponto acessível ou uma parede. Dessa forma, o usuário pode definir manualmente ou utilizar um labirinto pré-definido com posições de início e fim. A partir disso, o algoritmo escolhido pelo próprio usuário (BFS ou DFS) é executado para encontrar um caminho entre esses dois pontos.
+Este projeto consiste em uma aplicação interativa desenvolvida em Python que simula um jogo da cobrinha com um diferencial pedagógico: a aplicação de algoritmos de busca em grafos — Busca em Largura (BFS) e Busca em Profundidade (DFS) — para encontrar o caminho ideal até a próxima comida.
 
-Durante a execução, a aplicação mostra o passo a passo da busca, destacando as células visitadas e, ao final, exibindo o caminho encontrado entre o ponto inicial e o final, caso exista um caminho possível. O labirinto é internamente representado como um grafo, onde cada célula acessível é um vértice (nós) e as conexões com os vizinhos (cima, baixo, esquerda, direita) são as arestas.
+A cobrinha se move por um grid representado internamente como um grafo, onde cada célula é um vértice e as conexões entre as células adjacentes (cima, baixo, esquerda, direita) são as arestas. O jogador pode escolher, no início da partida, se deseja que o jogo utilize o algoritmo BFS ou DFS para sugerir o caminho até a comida, pressionando a tecla espaço para visualizá-lo. As possíveis rotas são destacadas dinamicamente na tela com cores diferentes: cinza para BFS e azul para DFS.
 
-O projeto é uma forma prática e intuitiva de visualizar como os algoritmos de busca operam em grafos e como podem ser aplicados para resolver problemas do mundo real, como encontrar caminhos em um ambiente com obstáculos. Com uma interface simples baseada em terminal ou interface gráfica leve, o projeto é ideal para reforçar os conceitos estudados em sala de aula de maneira objetiva e eficiente.
+Além disso, a cada comida coletada, um novo obstáculo (em vermelho) é gerado aleatoriamente no mapa, aumentando a dificuldade do jogo progressivamente. Se a cobrinha colidir com uma parede, o próprio corpo ou um obstáculo, o jogo termina. O sistema também registra e exibe a maior pontuação atingida durante a sessão.
+
+O jogo combina interatividade, desafio e aprendizado, sendo uma ferramenta visual e lúdica para a compreensão de conceitos fundamentais da Teoria dos Grafos.
 
 ## Objetivos do Projeto
 - Aplicar conceitos de teoria dos grafos em um cenário visual e interativo.
 - Implementar e comparar algoritmos clássicos de busca: DFS e BFS.
-- Melhorar a compreensão sobre grafos. 
+- Proporcionar uma forma intuitiva de compreender como grafos e algoritmos são aplicados em problemas do mundo real.
+- Estimular a análise de caminhos em ambientes com obstáculos.
 
----
 
-### **Screenshots**
+## **Screenshots**
 
-Adicione 3 ou mais screenshots do projeto em funcionamento.  
-(Sugestão: usar `![descrição](caminho/para/imagem)` para cada imagem.)
+A seguir, são apresentados screenshots do projeto em funcionamento. 
 
----
+Primeiramente, a tela inicial do jogo: 
 
-### **Instalação**
+![Tela inicial](assets/telaincial.png) 
 
-- **Linguagem:** Python   
-- **Framework:** (caso exista)
+Uma das possibilidades de rotas sugeridas ao optar-se por DFS: 
 
-**Pré-requisitos:**  
-Descreva os pré-requisitos necessários para rodar o projeto.
+![Caminho via DFS](assets/dfs.png)  
 
-**Comandos necessários para rodar o projeto:**  
-\`\`\`bash
-# Exemplo
-comando-para-instalar
-comando-para-executar
-\`\`\`
+E o mapa do jogo contendo obstáculos e a pontuação: 
 
----
+![Obstáculo e pontuação](assets/obstaculos.png) 
 
-### **Uso**
 
-Explique como usar seu projeto, caso haja algum passo a passo após o comando de execução.
 
----
+## **Instalação**
 
-### **Outros**
+- **Linguagem:** Python  
+- **Bibliotecas:** `tkinter` (interface gráfica), `random`, `collections`
 
-Quaisquer outras informações sobre seu projeto podem ser descritas abaixo.
+### **Pré-requisitos:**  
+
+Você precisa apenas do Python instalado (de preferência a partir da versão 3.6), pois o tkinter já vem embutido na maioria das instalações. 
+
+Se você estiver utilizando Ubuntu/Debian/Linux para verificar se o tkinter está instalado abra um terminal e rode:
+
+```bash
+python3 -m tkinter
+```
+
+Se abrir uma janelinha com "This is a Tcl/Tk..." então está tudo certo! Se der erro, use:
+
+```bash
+sudo apt install python3-tk
+``` 
+
+No caso do Windows ele já vem instalado com o Python, então: 
+
+**Como executar o jogo:**
+```bash
+python3 snake.py
+```
+
+
+## **Uso**
+
+1. Execute o jogo com o comando acima.
+
+2. Aguarde a tela inicial e pressione uma das setas (↑ ↓ ← →) para começar.
+
+3. Escolha o algoritmo de busca pressionando:
+
+    - B para BFS
+
+    - D para DFS
+
+4. A cada comida consumida:
+
+    - A cobra cresce.
+
+    - Um novo obstáculo é adicionado.
+
+5. Para visualizar o caminho sugerido pelo algoritmo:
+
+    - Pressione a tecla espaço durante o jogo.
+
+6. A pontuação atual e o recorde são mostrados no canto superior esquerdo.
+
+7. O jogo termina se a cobra colidir com o corpo, a parede ou um obstáculo.
+
+## **Outros**
+
+- Cores:
+
+    - Verde: Cobrinha
+
+    - Branco: Comida
+
+    - Vermelho: Obstáculos
+
+    - Cinza (BFS) / Azul (DFS): Caminho sugerido
+
+- A lógica do grafo está embutida nas representações do grid e nas funções de busca.
+
+- O jogo reinicia automaticamente ao pressionar qualquer tecla após o Game Over.
